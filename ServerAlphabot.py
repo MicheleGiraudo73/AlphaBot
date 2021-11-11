@@ -9,7 +9,7 @@ s = sck.socket(sck.AF_INET, sck.SOCK_STREAM)
 s.bind(indirizzo)
 path = "/home/pi/Alphabot/databaseAlphabot.db"
 
-
+#classe che gestisce i motori dell'alphabot
 class AlphaBot(object):
     
     def __init__(self, in1=13, in2=12, ena=6, in3=21, in4=20, enb=26):
@@ -110,6 +110,12 @@ class AlphaBot(object):
         except:
             pass
         '''
+        """
+        Il metodo gestisci() ricevendo una stringa 'parola'(è il nome nel db) che cercata 
+        tramite una query in una database di movimenti restituisce un insieme di movimenti.
+        I comandi vengono gestiti tramite una split in un for che fa eseguire all'Alphabot movimento per movimento 
+        Sono state aggiunte delle try except per gestire gli errori di parola o se il file non si trova
+        """
         conn = None
         try:
             conn = sqlite3.connect(path)
@@ -133,7 +139,7 @@ class AlphaBot(object):
                     pass
                 time.sleep(float(comando[1:])/1000)
                 self.stop()
-
+ 
 class Clients_class(thr.Thread):
     def __init__(self, s):
         thr.Thread.__init__(self)   
@@ -147,18 +153,30 @@ class Clients_class(thr.Thread):
 
 
 def main():
+    """
+    si mette in ascolto il socket, si accetta un client e viene poi gestita l'indisponibilità 
+    per altri client tramite un thread 
+    """
     s.listen()
     connessione, indirizzo = s.accept()
     
     temp = Clients_class(s)
     temp.start()
-    
+    '''
+    il primo messaggio viene scartato perchè il client manda un messaggio standard di accoppiamento
+    '''
     _ = (connessione.recv(4096)).decode()
     connessione.sendall(("controller accettato").encode())
     gestisciController(connessione)
         
     
 def gestisciController(connessione):
+    """
+    Istanzi un oggetto bot della classe Alphabot
+    Poi un while True gestice i messaggi inviati dal client 
+    Se il messaggio è "esci" si chiude la connessione, viene bloccato il while true
+    se no viene richiamto il metodo della classe Alphabot bot.gestisci() in cui si gestice il comando
+    """
     bot = AlphaBot()
     while True:
         messaggio = (connessione.recv(4096)).decode()
@@ -167,7 +185,8 @@ def gestisciController(connessione):
             break
         bot.gestisci(messaggio)
         print(messaggio)
-        
+
+
 
 if __name__ == '__main__':
     main()
