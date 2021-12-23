@@ -143,14 +143,20 @@ class AlphaBot(object):
         print("left")
     def stop(self):
         print("stop")
-    
+    def gestisci(self,comando):
+        print(comando)
+        print("dio")
     
 @app.route("/", methods=['GET', 'POST'])
 def index():
     bot = AlphaBot()
+    
     if request.method == 'POST':
-        #print(request.form.get())
-        if request.form.get('avanti') == '↑':
+        
+        if(request.form['inputQuery'] != ''):
+            #print(request.form['inputQuery'])
+            bot.gestisci(request.form['inputQuery'])
+        elif request.form.get('avanti') == '↑':
             bot.forward()
         elif  request.form.get('indietro') == '↓':
             bot.backward()
@@ -161,7 +167,7 @@ def index():
         elif  request.form.get('stop') == 'stop':
             bot.stop()
         else:
-            print("Unknown")
+            print("ciao")
     elif request.method == 'GET':
         return render_template('index.html')
     
