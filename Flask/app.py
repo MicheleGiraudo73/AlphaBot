@@ -1,9 +1,10 @@
 from flask import Flask, render_template, request
 import threading as thr
-import RPi.GPIO as GPIO
 import time
 app = Flask(__name__)
 
+'''
+import RPi.GPIO as GPIO
 class AlphaBot(object):
     
     def __init__(self, in1=13, in2=12, ena=6, in3=21, in4=20, enb=26):
@@ -95,7 +96,8 @@ class AlphaBot(object):
             GPIO.output(self.IN3, GPIO.LOW)
             GPIO.output(self.IN4, GPIO.HIGH)
             self.PWMB.ChangeDutyCycle(0 - left)
-    '''
+'''
+'''
     def gestisci(self,parola):
         #self.funzioni = {"F":self.forward,"S":self.stop,"B":self.backward,"L":self.left,"R":self.right}
         #try:
@@ -126,24 +128,46 @@ class AlphaBot(object):
                 pass
             time.sleep(float(comando[1:])/1000)
             self.stop()
-    '''
+'''
+
+class AlphaBot(object):
+    def __init__(self):
+        pass
+    def forward(self):
+        print("forward")
+    def backward(self):
+        print("backword")       
+    def right(self):
+        print("right")
+    def left(self):
+        print("left")
+    def stop(self):
+        print("stop")
+    def gestisci(self,comando):
+        print(comando)
+        print("dio")
+    
 @app.route("/", methods=['GET', 'POST'])
 def index():
     bot = AlphaBot()
+    
     if request.method == 'POST':
-        #print(request.form.get('action1'))
-        if request.form.get('avanti') == '&#8593':
+        
+        if(request.form['inputQuery'] != ''):
+            #print(request.form['inputQuery'])
+            bot.gestisci(request.form['inputQuery'])
+        elif request.form.get('avanti') == '↑':
             bot.forward()
-        elif  request.form.get('indietro') == '&#8595':
+        elif  request.form.get('indietro') == '↓':
             bot.backward()
-        elif  request.form.get('destra') == '&#8592':
+        elif  request.form.get('destra') == '→':
             bot.right()
-        elif  request.form.get('sinistra') == '&#8594':
+        elif  request.form.get('sinistra') == '←':
             bot.left()
         elif  request.form.get('stop') == 'stop':
             bot.stop()
         else:
-            print("Unknown")
+            print("ciao")
     elif request.method == 'GET':
         return render_template('index.html')
     
