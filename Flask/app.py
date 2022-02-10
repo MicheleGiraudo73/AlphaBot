@@ -2,8 +2,10 @@ from flask import Flask, render_template, request
 import threading as thr
 import time
 app = Flask(__name__)
+import sqlite3
 
 '''
+
 import RPi.GPIO as GPIO
 class AlphaBot(object):
     
@@ -64,6 +66,7 @@ class AlphaBot(object):
         GPIO.output(self.IN4, GPIO.LOW)
 
     def forward(self, speed=30):
+	print("avanti")
         self.PWMA.ChangeDutyCycle(speed)
         self.PWMB.ChangeDutyCycle(speed)
         GPIO.output(self.IN1, GPIO.HIGH)
@@ -96,25 +99,27 @@ class AlphaBot(object):
             GPIO.output(self.IN3, GPIO.LOW)
             GPIO.output(self.IN4, GPIO.HIGH)
             self.PWMB.ChangeDutyCycle(0 - left)
-'''
-'''
-    def gestisci(self,parola):
-        #self.funzioni = {"F":self.forward,"S":self.stop,"B":self.backward,"L":self.left,"R":self.right}
+
+
+
+        
+        
+    def gestisci(self,comando):
+            #self.funzioni = {"F":self.forward,"S":self.stop,"B":self.backward,"L":self.left,"R":self.right}
         #try:
          #   self.funzioni[parola]()
         #except:
         #    pass
-        
         conn = None
         try:
-            conn = sqlite3.connect(path)
+            conn = sqlite3.connect('./databaseAlphabot.db')
         except:    
             print("file non trovato")
-            
+        
         cur = conn.cursor()
         comandi = None
         try:
-            cur.execute(f"SELECT sequenza FROM movimenti WHERE nome = '{parola}'")
+            cur.execute(f"SELECT sequenza FROM movimenti WHERE nome = '{comando}'")
             comandi = cur.fetchall()[0][0]
             print(comandi)
         except:
@@ -125,10 +130,10 @@ class AlphaBot(object):
             try:
                 self.funzioni[comando[0]]()
             except:
-                pass
+                pass    
             time.sleep(float(comando[1:])/1000)
             self.stop()
-'''
+''' 
 
 class AlphaBot(object):
     def __init__(self):
@@ -145,12 +150,10 @@ class AlphaBot(object):
         print("stop")
     def gestisci(self,comando):
         print(comando)
-        print("dio")
     
 @app.route("/", methods=['GET', 'POST'])
 def index():
     bot = AlphaBot()
-    
     if request.method == 'POST':
         
         if(request.form['inputQuery'] != ''):
@@ -174,4 +177,4 @@ def index():
     return render_template("index.html")
 
 if __name__ == '__main__':
-    app.run(debug=True, host='localhost')
+    app.run(debug=True, host='0.0.0.0')
