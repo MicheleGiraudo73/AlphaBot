@@ -11,7 +11,7 @@ import string
 
 
 token = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(16))
-
+#Funzione per validare il login
 def validate(username, password):
     completion = False
     conn = None
@@ -37,7 +37,7 @@ def validate(username, password):
 
 def check_password(hashed_password, user_password):
     return hashed_password == user_password
-
+#Funzione che fa le query per chi entra nella pagina, registra l'accesso
 def accessi(user):
     con = None
     con= sqlite3.connect('databaseAlphabot.db')
@@ -48,6 +48,7 @@ def accessi(user):
     cur.execute("commit")
     con.close()
 
+#Pagina di login con il set del cookie
 @app.route('/', methods=['GET', 'POST'])
 
 def login():
@@ -197,7 +198,8 @@ class AlphaBot(object):
                 pass    
             time.sleep(float(comando[1:])/1000)
             self.stop()
-
+	
+#Funzione che registra chi fa il movimento e il movimento
 def regMov(user,mov):
     con = None
     con= sqlite3.connect('databaseAlphabot.db')
@@ -209,6 +211,7 @@ def regMov(user,mov):
     con.close()
     
 bot = AlphaBot()
+#pagina del controller dell'alpahabot
 @app.route(f'/{token}', methods=['GET', 'POST'])
 def index():
     us=request.cookies.get('username')
